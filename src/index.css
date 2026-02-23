@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-kahoot-red: #eb1727;
+  --color-kahoot-blue: #1368ce;
+  --color-kahoot-yellow: #ffa602;
+  --color-kahoot-green: #26890c;
+  --color-kahoot-purple: #46178f;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-kahoot-purple text-white min-h-screen;
+  }
+}
+
+.kahoot-button {
+  @apply relative overflow-hidden transition-all duration-200 active:translate-y-1 active:shadow-none shadow-[0_4px_0_0_rgba(0,0,0,0.2)];
+}
+
+.kahoot-card {
+  @apply bg-white text-gray-900 rounded-xl p-6 shadow-xl;
+}
