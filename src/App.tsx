@@ -62,9 +62,16 @@ const Home = () => {
 
   useEffect(() => {
     fetch('/api/quizzes')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
       .then(data => {
         setQuizzes(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Fetch error:", err);
         setLoading(false);
       });
   }, []);
@@ -82,13 +89,24 @@ const Home = () => {
         <p className="text-xl text-white/70">{t.heroSubtitle}</p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {loading ? (
-          Array(3).fill(0).map((_, i) => (
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array(3).fill(0).map((_, i) => (
             <div key={i} className="h-64 bg-white/5 animate-pulse rounded-2xl" />
-          ))
-        ) : (
-          quizzes.map((quiz) => (
+          ))}
+        </div>
+      ) : quizzes.length === 0 ? (
+        <div className="text-center py-20 bg-white/5 rounded-3xl border-2 border-dashed border-white/10">
+          <BookOpen className="w-16 h-16 mx-auto mb-4 text-white/20" />
+          <h3 className="text-2xl font-bold mb-2">No quizzes found</h3>
+          <p className="text-white/50 mb-6">Be the first to create a quiz!</p>
+          <Link to="/create" className="bg-white text-kahoot-purple px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors inline-flex items-center gap-2">
+            <Plus className="w-5 h-5" /> {t.create}
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {quizzes.map((quiz) => (
             <motion.div
               key={quiz.id}
               whileHover={{ y: -5 }}
@@ -117,9 +135,9 @@ const Home = () => {
                 <Play className="w-5 h-5 fill-current" /> {t.playNow}
               </Link>
             </motion.div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

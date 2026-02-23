@@ -31,32 +31,40 @@ db.exec(`
   );
 `);
 
-// Seed data if empty or reset for Uzbek 15-question requirement
+// Seed data if empty
 const quizCount = db.prepare("SELECT COUNT(*) as count FROM quizzes").get() as { count: number };
-if (quizCount.count <= 2) { // Resetting if it's just the initial 2 or empty
-  db.exec("DELETE FROM questions; DELETE FROM quizzes;");
-  
+console.log(`Current quiz count: ${quizCount.count}`);
+
+if (quizCount.count === 0) {
+  console.log("Seeding database with Uzbek questions...");
   const insertQuiz = db.prepare("INSERT INTO quizzes (title, description, topic) VALUES (?, ?, ?)");
   const insertQuestion = db.prepare("INSERT INTO questions (quiz_id, question_text, option_a, option_b, option_c, option_d, correct_option) VALUES (?, ?, ?, ?, ?, ?, ?)");
 
   const q1 = insertQuiz.run("Umumiy Bilimlar", "O'zbekiston va dunyo haqida 15 ta qiziqarli savol!", "General");
   const quizId = q1.lastInsertRowid;
 
-  insertQuestion.run(quizId, "O'zbekiston mustaqilligi qachon e'lon qilingan?", "1990", "1991", "1992", "1993", "B");
-  insertQuestion.run(quizId, "Dunyodagi eng baland tog' qaysi?", "K2", "Lhotse", "Everest", "Makalu", "C");
-  insertQuestion.run(quizId, "Quyosh tizimidagi eng katta sayyora?", "Mars", "Yupiter", "Saturn", "Neptun", "B");
-  insertQuestion.run(quizId, "Suvning kimyoviy formulasi qanday?", "CO2", "H2O", "O2", "NaCl", "B");
-  insertQuestion.run(quizId, "Alisher Navoiy kim bo'lgan?", "Sarkarda", "Shoir va mutafakkir", "Rassom", "Sayohatchi", "B");
-  insertQuestion.run(quizId, "O'zbekiston poytaxti qaysi shahar?", "Samarqand", "Buxoro", "Toshkent", "Xiva", "C");
-  insertQuestion.run(quizId, "Inson tanasidagi eng katta a'zo nima?", "Yurak", "O'pka", "Teri", "Jigar", "C");
-  insertQuestion.run(quizId, "Bir kunda necha soat bor?", "12", "24", "48", "60", "B");
-  insertQuestion.run(quizId, "Eng tez yuguradigan quruqlik hayvoni?", "Arslon", "Gepard", "Yo'lbars", "Bo'ri", "B");
-  insertQuestion.run(quizId, "Yer yuzida nechta okean bor?", "3", "4", "5", "6", "C");
-  insertQuestion.run(quizId, "O'zbekiston bayrog'ida nechta yulduz bor?", "10", "12", "15", "7", "B");
-  insertQuestion.run(quizId, "Kompyuterning asosiy hisoblash qismi nima deb ataladi?", "Monitor", "Klaviatura", "Protsessor", "Sichqoncha", "C");
-  insertQuestion.run(quizId, "Shaxmat taxtasida jami nechta katak bor?", "32", "64", "100", "81", "B");
-  insertQuestion.run(quizId, "Dunyodagi eng chuqur ko'l qaysi?", "Kaspiy", "Viktoriya", "Baykal", "Orol", "C");
-  insertQuestion.run(quizId, "Amir Temur qayerda tug'ilgan?", "Toshkent", "Samarqand", "Xo'ja Ilg'or (Shahrisabz)", "Buxoro", "C");
+  const questions = [
+    ["O'zbekiston mustaqilligi qachon e'lon qilingan?", "1990", "1991", "1992", "1993", "B"],
+    ["Dunyodagi eng baland tog' qaysi?", "K2", "Lhotse", "Everest", "Makalu", "C"],
+    ["Quyosh tizimidagi eng katta sayyora?", "Mars", "Yupiter", "Saturn", "Neptun", "B"],
+    ["Suvning kimyoviy formulasi qanday?", "CO2", "H2O", "O2", "NaCl", "B"],
+    ["Alisher Navoiy kim bo'lgan?", "Sarkarda", "Shoir va mutafakkir", "Rassom", "Sayohatchi", "B"],
+    ["O'zbekiston poytaxti qaysi shahar?", "Samarqand", "Buxoro", "Toshkent", "Xiva", "C"],
+    ["Inson tanasidagi eng katta a'zo nima?", "Yurak", "O'pka", "Teri", "Jigar", "C"],
+    ["Bir kunda necha soat bor?", "12", "24", "48", "60", "B"],
+    ["Eng tez yuguradigan quruqlik hayvoni?", "Arslon", "Gepard", "Yo'lbars", "Bo'ri", "B"],
+    ["Yer yuzida nechta okean bor?", "3", "4", "5", "6", "C"],
+    ["O'zbekiston bayrog'ida nechta yulduz bor?", "10", "12", "15", "7", "B"],
+    ["Kompyuterning asosiy hisoblash qismi nima deb ataladi?", "Monitor", "Klaviatura", "Protsessor", "Sichqoncha", "C"],
+    ["Shaxmat taxtasida jami nechta katak bor?", "32", "64", "100", "81", "B"],
+    ["Dunyodagi eng chuqur ko'l qaysi?", "Kaspiy", "Viktoriya", "Baykal", "Orol", "C"],
+    ["Amir Temur qayerda tug'ilgan?", "Toshkent", "Samarqand", "Xo'ja Ilg'or (Shahrisabz)", "Buxoro", "C"]
+  ];
+
+  for (const q of questions) {
+    insertQuestion.run(quizId, ...q);
+  }
+  console.log("Seeding complete.");
 }
 
 async function startServer() {
